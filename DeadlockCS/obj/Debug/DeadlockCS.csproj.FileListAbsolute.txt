@@ -1,0 +1,6 @@
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\bin\Debug\DeadlockCS.exe.config
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\bin\Debug\DeadlockCS.exe
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\bin\Debug\DeadlockCS.pdb
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\obj\Debug\DeadlockCS.csprojResolveAssemblyReference.cache
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\obj\Debug\DeadlockCS.exe
+c:\users\administrator\documents\visual studio 2012\Projects\DeadlockCS\DeadlockCS\obj\Debug\DeadlockCS.pdb
