@@ -4,6 +4,11 @@
  * OS Theory - Assignment 9 - Deadlock
  * Professor Gordon
  * 
+ * This program doesn't cause deadlock due to use of threads for each set of
+ * "critical" instructions. Each thread (P0, P1, and P2) uses different resource 
+ * objects (A through F). Some overlap but a deadlock is prevented by locking
+ * the resource object to that particular thread until the code using it is
+ * finished. In this case, it's just a thread timer and console output.
  */
 
 using System;
@@ -17,6 +22,7 @@ namespace DeadlockCS
 {
     class Program
     {
+        // Simulates the thread actually doing something with each resource.
         static int sleepTime = 1000;
 
         static readonly object resource_A = new Object();
@@ -26,9 +32,12 @@ namespace DeadlockCS
         static readonly object resource_E = new Object();
         static readonly object resource_F = new Object();
 
+        // Thread 1 - labeled P0 in the assignment
         static void P0()
         {
             // Thread serialization
+            // Once the "critical code" - Thread.Sleep() - is finished, the
+            // resource is released automatically.
             lock (resource_A)
             {
                 Thread.Sleep(sleepTime);
@@ -48,6 +57,7 @@ namespace DeadlockCS
             }
         }
 
+        // Thread 2 - labeled P1 in the assignment
         static void P1()
         {
             sleepTime += 100;
@@ -77,6 +87,7 @@ namespace DeadlockCS
             }
         }
 
+        // Thread 3 - labeled P2 in the assignment
         static void P2()
         {
             sleepTime += 200;
@@ -108,8 +119,7 @@ namespace DeadlockCS
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Kitty!");
-
+            // Create and start the threads
             Thread thread_P0 = new Thread(new ThreadStart(P0));
             Thread thread_P1 = new Thread(new ThreadStart(P1));
             Thread thread_P2 = new Thread(new ThreadStart(P2));
