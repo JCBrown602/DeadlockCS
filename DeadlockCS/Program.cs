@@ -8,51 +8,101 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 
 namespace DeadlockCS
 {
-    class Resource
-    {
-        // Properties
-        private static int numUses;
-        private static object _lockingObject = new object();
-
-        // Methods
-        public void useResource()
-        {
-            lock (_lockingObject)
-            {
-                Thread.Sleep(100);
-                numUses += 1;
-                Console.WriteLine("USING RESOURCE: {0}, NUMBER of USES: {1}", Environment.TickCount, numUses);
-            }
-        }
-    }
-
     class Program
     {
+        static int sleepTime = 1000;
+
         static readonly object resource_A = new Object();
         static readonly object resource_B = new Object();
+        static readonly object resource_C = new Object();
+        static readonly object resource_D = new Object();
+        static readonly object resource_E = new Object();
+        static readonly object resource_F = new Object();
 
-        static void A()
+        static void P0()
         {
             // Thread serialization
             lock (resource_A)
             {
-                Thread.Sleep(100);
-                Console.WriteLine("Thread A: " + Environment.TickCount);
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P0, Resource A: " + Environment.TickCount);
+            }
+
+            lock (resource_B)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P0, Resource B: " + Environment.TickCount);
+            }
+
+            lock (resource_C)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P0, Resource C: " + Environment.TickCount);
             }
         }
 
-        static void B()
+        static void P1()
         {
+            sleepTime += 100;
+
+            lock (resource_A)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P1, Resource A: " + Environment.TickCount);
+            }
+
+            lock (resource_D)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P1, Resource D: " + Environment.TickCount);
+            }
+
+            lock (resource_E)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P1, Resource E: " + Environment.TickCount);
+            }
+
             lock (resource_B)
             {
-                Thread.Sleep(100);
-                Console.WriteLine("Thread B: " + Environment.TickCount);
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P1, Resource B: " + Environment.TickCount);
+            }
+        }
+
+        static void P2()
+        {
+            sleepTime += 200;
+
+            lock (resource_A)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P2, Resource A: " + Environment.TickCount);
+            }
+
+            lock (resource_C)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P2, Resource C: " + Environment.TickCount);
+            }
+
+            lock (resource_F)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P2, Resource F: " + Environment.TickCount);
+            }
+
+            lock (resource_D)
+            {
+                Thread.Sleep(sleepTime);
+                Console.WriteLine("Thread P2, Resource D: " + Environment.TickCount);
             }
         }
 
@@ -60,20 +110,17 @@ namespace DeadlockCS
         {
             Console.WriteLine("Hello Kitty!");
 
-            Resource resource_A = new Resource();
+            Thread thread_P0 = new Thread(new ThreadStart(P0));
+            Thread thread_P1 = new Thread(new ThreadStart(P1));
+            Thread thread_P2 = new Thread(new ThreadStart(P2));
 
-            for (int i = 0; i < 10; i++)
-            {
-                ThreadStart start_A = new ThreadStart(A);
+            thread_P0.Start();
+            thread_P1.Start();
+            thread_P2.Start();
 
-                ThreadStart start_R = new ThreadStart(resource_A.useResource);
-                ThreadStart start_S = new ThreadStart(resource_A.useResource);
-
-                new Thread(start_A).Start();
-
-                new Thread(start_R).Start();
-                new Thread(start_S).Start();
-            }
+            thread_P0.Join();
+            thread_P1.Join();
+            thread_P2.Join();
         }
     }
 }
